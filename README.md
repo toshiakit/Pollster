@@ -1,33 +1,33 @@
-Election Poll Analysis in MATLAB
-================================
+# Election Poll Analysis in MATLAB
+
 Availability of abundant data, coupled with the very impressive success of a complete outsider, Nate Silver, to make perfect calls in the last two presidential elections, turned election poll analysis one of a fertile playgrounds for hobbyists to apply their data analytics skills for fun.
 
 This analysis looks at the example of recent outcome of the special congressional election in Florida to find out: *does national politics affect local elections?* It also provides a ‘__hello world__’ example of getting election poll data from Pollster website in JSON format, and automating the data pull process using object oriented programming.
 
-Does national politics affect local elections?
----------------------------------------------
+### Does national politics affect local elections?
+
 There was a race in Florida recently that was supposedly [a test case for how Obama’s healthcare law impacts the mid-term election](http://www.huffingtonpost.com/2014/03/11/florida-special-election_n_4937699.html). Or was it? Here is the election polls data from that race. 
 
 ![Special Election in Florida 13th Congressional District 2014](html/pollster_02.png)
 
 What you can see in this plot is that the number of undecided voters suddenly dropped, and both Sink (D) and Jolly (R) benefited from it. But a larger percentage of those voters ended up voting for Jolly, rather than Sink. This rapid shift happened around Feb 5 – 12. What I expected was a smoother decline of undecided over time, perhaps more accelerated toward the election day.
 
-Could this have been caused by national politics?
--------------------------------------------------
+### Could this have been caused by national politics?
+
 If you believe the pundits, then national issues like the healthcare law affected this local election. Let’s use Obama’s job approval rating as a proxy to check it out.
 
 ![Florida 13th - Obama Job Approval](html/pollster_03.png)
 
 As you can see in the plot, Obama’s national poll was actually going up towards the end of this election.
 
-All politics is local
----------------------
+### All politics is local
+
 It is more important to see the local trend rather than national trend. So use the polls from Florida alone to see the local Obama Job Approval trend.
 
 ![Florida 13th - Local Obama Job Approval](html/pollster_04.png)
 
-Has Obama sunk Sink?
---------------------
+### Has Obama sunk Sink?
+
 Obama’s Job Approval was in recovery at the national level, but his approval was actually going down in Florida during this election. But can we really say this was attributable to Obamacare?
 
 Let me know if you have good data source to test this claim. I am wondering what was happening around the time the undecided suddenly became decided in the beginning of February. In my opinion, Obamacare doesn’t fully explain this rapid shift.
@@ -42,8 +42,8 @@ National news headlines around that time:
 
 Nothing jumps out to me as a possible clue. Perhaps we need to look at local headlines instead. If so, then it would weaken the claim that this election was a test for a national issue.
 
-Pollster API
-------------
+### Pollster API
+
 Now I would like to address the programming aspect of this post. [Pollster API](http://elections.huffingtonpost.com/pollster/api) provides convenient access to the data from election polls. There are other websites that aggregate election polls, but this API was the easiest to use. Let’s start out with a ‘__hello, world__’ example of getting data for Obama Job Approval Ratings.
 
 <pre><code>clearvars;close all;clc;
@@ -56,8 +56,8 @@ fullUrl = sprintf('%s/%s.%s',baseUrl,slug,respFormat);
 clearvars baseUrl respFormat slug
 </code></pre>
 
-Read JSON data using JSONlab
-----------------------------
+### Read JSON data using JSONlab
+
 Install [JSONlab](http://www.mathworks.com/matlabcentral/fileexchange/33381-jsonlab-a-toolbox-to-encodedecode-json-files-in-matlaboctave) from FileExchange before running script, and change the addpath to your installed location of JSONlab.
 
 <pre><code>addpath ../jsonlab_1.0alpha/jsonlab;
@@ -81,8 +81,8 @@ clearvars fullUrl
     estimates_by_date: {1x1032 cell}
 </pre>
 
-Convert the data into a table
------------------------------
+### Convert the data into a table
+
 JSON stores data in nested tree structure like XML, so we need to convert it into a table in order to use the data in MATLAB.T This is a new feature introduced in R2013b, and I like it quite a lot.
 
 <pre><code>% initialize variables
@@ -125,8 +125,7 @@ clearvars date approve disapprove undecided i j
     7.3568e+05    43.4       52.2          4.4   
 </pre>
 
-Remove missing values
----------------------
+### Remove missing values
 
 Real data is never perfect, so we need to Check for missing values and remove affected rows.
 
@@ -160,8 +159,7 @@ rows to drop for approve/disapprove
     7.3382e+05    0          0             9.6    
 </pre>
 
-Get a summmary statistics of the variables
-------------------------------------------
+### Get a summmary statistics of the variables
 
 This gives you the min, max and median for numerical variables.
 
@@ -192,8 +190,8 @@ Variables:
             max        52.5       
 </pre>
 
-Plotting Obama Job Approval
----------------------------
+### Plotting Obama Job Approval
+
 In the final step, let's validate the data processing so far by plotting the data and compare it the chart on Pollster website.
 
 ![Obama Job Approval](html/obama-job-approval.png)
@@ -218,8 +216,8 @@ clearvars h
 ![Obama Job Approval](html/pollster_01.png)
 
 
-Automate the process with object oriented programming
------------------------------------------------------
+### Automate the process with object oriented programming
+
 As you can see, this is an iterative process, so it is good idea to automate some of the steps. Let’s use object oriented programming techniques to facilitate the data pull using a custom class called *myPollster* that I wrote. This way, all the processed data is encapsulated in the object itself, and you don’t run into namespacing issues.
 
 <pre><code>% instantiate the object
@@ -245,8 +243,7 @@ clearvars slug
     7.3566e+05    45.9    44.3     6.4       3.4      
 </pre>
 
-Check for missing values
-------------------------
+### Check for missing values
 
 *myPollster* class also provides a utility method to return the logical indices of missing values in the table.
 
@@ -263,8 +260,8 @@ check which variable contains missing value...
     0       0       0        28        0     
 </pre>
 
-Get the actual election result
-------------------------------
+### Get the actual election result
+
 You can get the actual election result from [Wikipedia](http://en.wikipedia.org/wiki/Florida%27s_13th_congressional_district_special_election,_2014).
 
 <pre><code>FL13result = array2table(zeros(1,width(FL13.T)),...
@@ -287,8 +284,8 @@ election result...
     7.3567e+05    46.554    48.433    4.8342    0.1783   
 </pre>
 
-Plot the Florida 13th data
---------------------------
+### Plot the Florida 13th data
+
 Here is the code for plotting the Florida 13th data - this is where we do a lot of iterations, so it is not automated intentionally for flexibility.
 
 <pre><code>figure
@@ -322,8 +319,8 @@ hold off
 clearvars h
 </code></pre>
 
-Mixing datasets in the plot
-----------------------------
+### Mixing datasets in the plot
+
 Another benefit of object oriented programming is that the data is encapsulated in the object itself, so we can use it for namespacing similar variables. Here, we are comparing Obama's Job Approval at national as well as local levels. But thanks to the dot notation to reference encapsulated data, you are less likely to mix up similarly named variables.
 
 
@@ -358,8 +355,8 @@ hold off
 clearvars h
 </code></pre>
 
-Have I whetted your appetite?
--------------------------
+### Have I whetted your appetite?
+
 Hopefully this simple example was sufficient to get you interested in trying it yourself. In this example, I simply took the smoothed trend lines provided by Pollster, but you could also get individual poll data and build more complex model to make some prediction yourself. 
 
 
