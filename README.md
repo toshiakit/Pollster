@@ -1,15 +1,50 @@
 Election Poll Analysis in MATLAB
-========================================================
+================================
+Availability of abundant data, coupled with the very impressive success of a complete outsider, Nate Silver, to make perfect calls in the last two presidential elections, turned election poll analysis one of a fertile playgrounds for hobbyists to apply their data analytics skills for fun.
 
-Availability of abundant data, coupled with a very impressive success of a complete outsider, Nate Silver, to make the perfect call in the last two presidential elections, turned election poll analysis one of a fertile playgrounds for hobbyists to apply their data analytics skills for fun.
+This analysis looks at the example of recent outcome of the special congressional election in Florida to find out: *does national politics affect local elections?* It also provides a ‘__hello world__’ example of getting election poll data from Pollster website in JSON format, and automating the data pull process using object oriented programming.
 
-This analysis starts out with a simple example, and then look at the example of recent outcome of the special congressional election in Florida to find out - **does national politics affect local elections?**
+Does national politics affect local elections?
+---------------------------------------------
+There was a race in Florida recently that was supposedly [a test case for how Obama’s healthcare law impacts the mid-term election](http://www.huffingtonpost.com/2014/03/11/florida-special-election_n_4937699.html). Or was it? Here is the election polls data from that race. 
+
+![Special Election in Florida 13th Congressional District 2014](html/pollster_02.png)
+
+What you can see in this plot is that the number of undecided voters suddenly dropped, and both Sink (D) and Jolly (R) benefited from it. But a larger percentage of those voters ended up voting for Jolly, rather than Sink. This rapid shift happened around Feb 5 – 12. What I expected was a smoother decline of undecided over time, perhaps more accelerated toward the election day.
+
+Could this have been caused by national politics?
+-------------------------------------------------
+If you believe the pundits, then national issues like the healthcare law affected this local election. Let’s use Obama’s job approval rating as a proxy to check it out.
+
+![Florida 13th - Obama Job Approval](html/pollster_03.png)
+
+As you can see in the plot, Obama’s national poll was actually going up towards the end of this election.
+
+All politics is local
+---------------------
+It is more important to see the local trend rather than national trend. So use the polls from Florida alone to see the local Obama Job Approval trend.
+
+![Florida 13th - Local Obama Job Approval](html/pollster_04.png)
+
+Has Obama sunk Sink?
+--------------------
+Obama’s Job Approval was in recovery at the national level, but his approval was actually going down in Florida during this election. But can we really say this was attributable to Obamacare?
+
+Let me know if you have good data source to test this claim. I am wondering what was happening around the time the undecided suddenly became decided in the beginning of February. In my opinion, Obamacare doesn’t fully explain this rapid shift.
+
+National news headlines around that time:
+
+* Philip Seymour Hoffman died
+* Sochi Olympics coverage
+* Farm bill passing Senate
+* House approved debt limit ceiling hike
+* Story about less employment under Obamacare
+
+Nothing jumps out to me as a possible clue. Perhaps we need to look at local headlines instead. If so, then it would weaken the claim that this election was a test for a national issue.
 
 Pollster API
 ------------
-[Pollster API](http://elections.huffingtonpost.com/pollster/api) provides convenient access to the data from election polls. There are other websites that aggregate election polls, this API was the easiest to use.
-
-Let's start out with a 'hello, world' example of getting data for Obama Job Approval Ratings.
+Now I would like to address the programming aspect of this post. [Pollster API](http://elections.huffingtonpost.com/pollster/api) provides convenient access to the data from election polls. There are other websites that aggregate election polls, but this API was the easiest to use. Let’s start out with a ‘__hello, world__’ example of getting data for Obama Job Approval Ratings.
 
 <pre><code>clearvars;close all;clc;
 
@@ -48,7 +83,7 @@ clearvars fullUrl
 
 Convert the data into a table
 -----------------------------
-JSON stores data in nested tree structure like XML, so we need to convert it into a table in order to use the data in MATLAB.
+JSON stores data in nested tree structure like XML, so we need to convert it into a table in order to use the data in MATLAB.T This is a new feature introduced in R2013b, and I like it quite a lot.
 
 <pre><code>% initialize variables
 estimates=data.estimates_by_date;
@@ -93,7 +128,7 @@ clearvars date approve disapprove undecided i j
 Remove missing values
 ---------------------
 
-Real data is never perfect, so we need to Check for missing values and remove affected rows
+Real data is never perfect, so we need to Check for missing values and remove affected rows.
 
 <pre><code>% get the indices of zero values
 isMissing=table2array(estimates) == 0;
@@ -183,12 +218,9 @@ clearvars h
 ![Obama Job Approval](html/pollster_01.png)
 
 
-Does national politics affect local election?
----------------------------------------------
-
-There was a race in Florida recently that was supposedly a test case for how Obama's healthcare law impacts the mid-term election. Or is it?
-
-Let's get the data, but this time, let's use Object Oriented Programming technique to facilitate the data pull step using a custom class called myPollster that I wrote. This way, all the processed data is encapsulated in the object itself, and you don't run into namespacing issues.
+Automate the process with object oriented programming
+-----------------------------------------------------
+As you can see, this is an iterative process, so it is good idea to automate some of the steps. Let’s use object oriented programming techniques to facilitate the data pull using a custom class called *myPollster* that I wrote. This way, all the processed data is encapsulated in the object itself, and you don’t run into namespacing issues.
 
 <pre><code>% instantiate the object
 FL13 = myPollster();
@@ -216,7 +248,7 @@ clearvars slug
 Check for missing values
 ------------------------
 
-myPollster class also provides a utility method to return the logical indices of missing values in the table.
+*myPollster* class also provides a utility method to return the logical indices of missing values in the table.
 
 <pre><code>disp('check which variable contains missing value...')
 disp(array2table(sum(FL13.isMissing),'VariableNames',...
@@ -257,7 +289,7 @@ election result...
 
 Plot the Florida 13th data
 --------------------------
-What you can see in this plot is that the number of undecided voters suddenly dropped, and both Sink and Jolly benefited from it, but large percentage of those voters actually ended up voting for Jolly, rather than Sink. This rapid shift happened around Feb 5 - 12.
+Here is the code for plotting the Florida 13th data - this is where we do a lot of iterations, so it is not automated intentionally for flexibility.
 
 <pre><code>figure
 plot(FL13.T.Date,FL13.T.Sink,'b-','LineWidth',2)
@@ -290,74 +322,10 @@ hold off
 clearvars h
 </code></pre>
 
-![Florida 13th](html/pollster_02.png)
+Mixing datasets in the plot
+----------------------------
+Another benefit of object oriented programming is that the data is encapsulated in the object itself, so we can use it for namespacing similar variables. Here, we are comparing Obama's Job Approval at national as well as local levels. But thanks to the dot notation to reference encapsulated data, you are less likely to mix up similarly named variables.
 
-Could this have been caused by national politics?
--------------------------------------------------
-
-If you believe the pundits, then national issues like the healthcare law affects the local politics. Let's use Obama's job approval rating as a proxy to check it out.
-
-As you can see in the plot, Obama's national poll was actually going up towards the end of this election.
-
-<pre><code>figure
-subplot(2,1,1)
-plot(FL13.T.Date,FL13.T.Sink,'b-','LineWidth',2)
-hold on
-plot(FL13.T.Date,FL13.T.Jolly,'r-','LineWidth',2)
-plot(FL13result.Date,FL13result.Sink,'bo')
-plot(FL13result.Date,FL13result.Jolly,'ro')
-datetick
-xlabel('Date')
-ylabel('Estimate')
-legend('Sink','Jolly','Location','SouthEast')
-xlim([datenum('2013-11-01') datenum('2014-03-15')])
-title(FL13.title)
-hold off
-subplot(2,1,2)
-plot(obamaDecided.date,obamaDecided.approve,'m-','LineWidth',2)
-datetick
-xlabel('Date')
-ylabel('Estimate')
-legend('National Polls','Location','SouthEast')
-xlim([datenum('2013-11-01') datenum('2014-03-15')])
-ylim([40 44])
-title(data.title)
-hold off
-</code></pre>
-
-![Florida 13th - Obama Job Approval](html/pollster_03.png)
-
-All politics is local
----------------------
-
-Actually, it is more important to see the local trend rather than national trend. So use the polls from Florida alone to see the local Obama Job Approval trend.
-
-Let's get the data again.
-
-<pre><code>% use myPollster class to call the API
-obamaFL = myPollster();
-slug = 'florida-obama-job-approval';
-obamaFL.getChartData(slug);
-
-clearvars slug
-</code></pre>
-
-Has Obama sunk Sink?
---------------------
-
-Obama's Job Approval was recovery at the national level, his approval was actually going down in Florida during this election. But can you really say this was the test of Obamacare?
-
-Let me know if you have good data source to test this claim. I am wondering what was happening around the time the undecided suddenly became decided in the beginning of February. In my opinion, Obamacare doesn't fully explain this rapid shift.
-
-National news headlines around that time:
-
-* Philip Seymour Hoffman died
-* Sochi Olympics coverage
-* Farm bill passing Senate
-* House approved debt limit ceiling hike
-* Story about less employment under Obamacare
-
-Nothing jumps out to me as a possible clue. Perhaps we need to look at local headlines instead. If so, then it would weaken the claim that this election was a test for national issue.
 
 <pre><code>figure
 subplot(2,1,1)
@@ -390,4 +358,12 @@ hold off
 clearvars h
 </code></pre>
 
-![Florida 13th - Obama Job Approval](html/pollster_04.png)
+Have I whetted your appetite?
+-------------------------
+Hopefully this simple example was sufficient to get you interested in trying it yourself. In this example, I simply took the smoothed trend lines provided by Pollster, but you could also get individual poll data and build more complex model to make some prediction yourself. 
+
+
+
+
+
+
