@@ -1,6 +1,6 @@
 # Election Poll Analysis in MATLAB
 
-Availability of abundant data, coupled with the very impressive success of a complete outsider, Nate Silver, to make perfect calls in the last two presidential elections, turned election poll analysis one of a fertile playgrounds for hobbyists to apply their data analytics skills for fun.
+Availability of abundant data, coupled with the very impressive success of a complete outsider, Nate Silver, to make perfect calls in the last two presidential elections, turned election poll analysis one of fertile playgrounds for hobbyists to apply their data analytics skills for fun.
 
 This analysis looks at the example of recent outcome of the special congressional election in Florida to find out: *does national politics affect local elections?* It also provides a ‘__hello world__’ example of getting election poll data from Pollster website in JSON format, and automating the data pull process using object oriented programming.
 
@@ -22,7 +22,7 @@ As you can see in the plot, Obama’s national poll was actually going up toward
 
 ### All politics is local
 
-It is more important to see the local trend rather than national trend. So use the polls from Florida alone to see the local Obama Job Approval trend.
+It is more important to see the local trend rather than the national trend. So use the polls from Florida alone to see the local Obama Job Approval trend.
 
 ![Florida 13th - Local Obama Job Approval](html/pollster_04.png)
 
@@ -46,7 +46,8 @@ Nothing jumps out to me as a possible clue. Perhaps we need to look at local hea
 
 Now I would like to address the programming aspect of this post. [Pollster API](http://elections.huffingtonpost.com/pollster/api) provides convenient access to the data from election polls. There are other websites that aggregate election polls, but this API was the easiest to use. Let’s start out with a ‘__hello, world__’ example of getting data for Obama Job Approval Ratings.
 
-<pre><code>clearvars;close all;clc;
+```{matlab}
+clearvars;close all;clc;
 
 baseUrl='http://elections.huffingtonpost.com/pollster/api/charts';
 slug = 'obama-job-approval';
@@ -54,19 +55,20 @@ respFormat = 'json';
 fullUrl = sprintf('%s/%s.%s',baseUrl,slug,respFormat);
 
 clearvars baseUrl respFormat slug
-</code></pre>
+```
 
 ### Read JSON data using JSONlab
 
-Install [JSONlab](http://www.mathworks.com/matlabcentral/fileexchange/33381-jsonlab-a-toolbox-to-encodedecode-json-files-in-matlaboctave) from FileExchange before running script, and change the addpath to your installed location of JSONlab.
+We need a way to read JSON formatted response into MATLAB. Install [JSONlab](http://www.mathworks.com/matlabcentral/fileexchange/33381-jsonlab-a-toolbox-to-encodedecode-json-files-in-matlaboctave) from FileExchange before running script, and change the addpath to your installed location of JSONlab.
 
-<pre><code>addpath ../jsonlab_1.0alpha/jsonlab;
+```{matlab}
+addpath ../jsonlab_1.0alpha/jsonlab;
 
 data=loadjson(urlread(fullUrl));
 disp(data)
 
 clearvars fullUrl
-</code></pre>
+```
 
 <pre>
                 title: 'Obama Job Approval'
@@ -85,7 +87,8 @@ clearvars fullUrl
 
 JSON stores data in nested tree structure like XML, so we need to convert it into a table in order to use the data in MATLAB.T This is a new feature introduced in R2013b, and I like it quite a lot.
 
-<pre><code>% initialize variables
+```{matlab}
+% initialize variables
 estimates=data.estimates_by_date;
 date = zeros(length(estimates),1);
 approve = zeros(length(estimates),1);
@@ -112,7 +115,7 @@ estimates = table(date,approve,disapprove,undecided);
 disp(estimates(1:5,:))
 
 clearvars date approve disapprove undecided i j
-</code></pre>
+```
 
 <pre>
        date       approve    disapprove    undecided
@@ -129,7 +132,8 @@ clearvars date approve disapprove undecided i j
 
 Real data is never perfect, so we need to Check for missing values and remove affected rows.
 
-<pre><code>% get the indices of zero values
+```{matlab}
+% get the indices of zero values
 isMissing=table2array(estimates) == 0;
 % get the count of missing values by variable
 disp('number of missing values by variable')
@@ -142,7 +146,7 @@ obamaDecided = estimates(~isMissing(:,2),1:3);
 obamaUndecided = estimates(~isMissing(:,4),[1 4]);
 
 clearvars isMissing
-</code></pre>
+```
 
 <pre>
 number of missing values by variable
@@ -163,7 +167,9 @@ rows to drop for approve/disapprove
 
 This gives you the min, max and median for numerical variables.
 
-<pre><code>summary(obamaDecided)</code></pre>
+```{matlab}
+summary(obamaDecided)
+```
 
 <pre>
 Variables:
@@ -196,7 +202,8 @@ In the final step, let's validate the data processing so far by plotting the dat
 
 ![Obama Job Approval](html/obama-job-approval.png)
 
-<pre><code>figure
+```{matlab}
+figure
 plot(obamaDecided.date,obamaDecided.approve,'k-','LineWidth',2)
 hold on
 plot(obamaDecided.date,obamaDecided.disapprove,'r-','LineWidth',2)
@@ -211,16 +218,16 @@ xlim([datenum('2009-01-01') Inf])
 hold off
 
 clearvars h
-</code></pre>
+```
 
 ![Obama Job Approval](html/pollster_01.png)
 
 
-### Automate the process with object oriented programming
+### Automate with Object Oriented Programming
 
 As you can see, this is an iterative process, so it is good idea to automate some of the steps. Let’s use object oriented programming techniques to facilitate the data pull using a custom class called *myPollster* that I wrote. This way, all the processed data is encapsulated in the object itself, and you don’t run into namespacing issues.
 
-<pre><code>% instantiate the object
+```{matlab}% instantiate the object
 FL13 = myPollster();
 % specify the slug for the data pull
 slug = '2014-florida-house-13th-district-special-election';
@@ -230,7 +237,7 @@ FL13.getChartData(slug);
 disp(FL13.T(1:5,:))
 
 clearvars slug
-</code></pre>
+```
 
 <pre>
        Date       Sink    Jolly    Overby    Undecided
@@ -247,10 +254,11 @@ clearvars slug
 
 *myPollster* class also provides a utility method to return the logical indices of missing values in the table.
 
-<pre><code>disp('check which variable contains missing value...')
+```{matlab}
+disp('check which variable contains missing value...')
 disp(array2table(sum(FL13.isMissing),'VariableNames',...
     FL13.T.Properties.VariableNames))
-</code></pre>
+```
 
 <pre>
 check which variable contains missing value...
@@ -264,7 +272,8 @@ check which variable contains missing value...
 
 You can get the actual election result from [Wikipedia](http://en.wikipedia.org/wiki/Florida%27s_13th_congressional_district_special_election,_2014).
 
-<pre><code>FL13result = array2table(zeros(1,width(FL13.T)),...
+```{matlab}
+FL13result = array2table(zeros(1,width(FL13.T)),...
     'VariableNames',FL13.T.Properties.VariableNames);
 FL13result.Date = datenum('2014-03-11');
 FL13result.Sink = 85642/183962*100;
@@ -274,7 +283,7 @@ FL13result.Undecided = 328/183962*100;
 
 disp('election result...')
 disp(FL13result)
-</code></pre>
+```
 
 <pre>
 election result...
@@ -288,7 +297,8 @@ election result...
 
 Here is the code for plotting the Florida 13th data - this is where we do a lot of iterations, so it is not automated intentionally for flexibility.
 
-<pre><code>figure
+```{matlab}
+figure
 plot(FL13.T.Date,FL13.T.Sink,'b-','LineWidth',2)
 hold on
 plot(FL13.T.Date,FL13.T.Jolly,'r-','LineWidth',2)
@@ -317,14 +327,15 @@ text(datenum('2014-01-18'),13,'05-Feb-2014')
 hold off
 
 clearvars h
-</code></pre>
+```
 
 ### Mixing datasets in the plot
 
 Another benefit of object oriented programming is that the data is encapsulated in the object itself, so we can use it for namespacing similar variables. Here, we are comparing Obama's Job Approval at national as well as local levels. But thanks to the dot notation to reference encapsulated data, you are less likely to mix up similarly named variables.
 
 
-<pre><code>figure
+```{matlab}
+figure
 subplot(2,1,1)
 plot(FL13.T.Date,FL13.T.Sink,'b-','LineWidth',2)
 hold on
@@ -353,7 +364,7 @@ title(data.title)
 hold off
 
 clearvars h
-</code></pre>
+```
 
 ### Have I whetted your appetite?
 
