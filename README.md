@@ -70,7 +70,7 @@ disp(data)
 clearvars fullUrl
 ```
 
-<pre>
+```
                 title: 'Obama Job Approval'
                  slug: 'obama-job-approval'
                 topic: 'obama-job-approval'
@@ -81,7 +81,7 @@ clearvars fullUrl
                   url: 'http://elections.huffingtonpost.com/pollster/obama...'
             estimates: {[1x1 struct]  [1x1 struct]  [1x1 struct]}
     estimates_by_date: {1x1032 cell}
-</pre>
+```
 
 ### Convert the data into a table
 
@@ -117,7 +117,7 @@ disp(estimates(1:5,:))
 clearvars date approve disapprove undecided i j
 ```
 
-<pre>
+```
        date       approve    disapprove    undecided
     __________    _______    __________    _________
 
@@ -126,7 +126,7 @@ clearvars date approve disapprove undecided i j
     7.3568e+05    43.4       52.1          4.4      
     7.3568e+05    43.4       52.1          4.4      
     7.3568e+05    43.4       52.2          4.4   
-</pre>
+```
 
 ### Remove missing values
 
@@ -148,7 +148,7 @@ obamaUndecided = estimates(~isMissing(:,4),[1 4]);
 clearvars isMissing
 ```
 
-<pre>
+```
 number of missing values by variable
     date    approve    disapprove    undecided
     ____    _______    __________    _________
@@ -161,7 +161,7 @@ rows to drop for approve/disapprove
 
     7.3515e+05    0          0               4      
     7.3382e+05    0          0             9.6    
-</pre>
+```
 
 ### Get a summmary statistics of the variables
 
@@ -171,7 +171,7 @@ This gives you the min, max and median for numerical variables.
 summary(obamaDecided)
 ```
 
-<pre>
+```
 Variables:
 
     date: 1030x1 double
@@ -194,7 +194,7 @@ Variables:
             min        12.5       
             median    47.85       
             max        52.5       
-</pre>
+```
 
 ### Plotting Obama Job Approval
 
@@ -239,7 +239,7 @@ disp(FL13.T(1:5,:))
 clearvars slug
 ```
 
-<pre>
+```
        Date       Sink    Jolly    Overby    Undecided
     __________    ____    _____    ______    _________
 
@@ -248,7 +248,7 @@ clearvars slug
     7.3567e+05      46    44.3     6.4       3.4      
     7.3567e+05    45.9    44.3     6.4       3.4      
     7.3566e+05    45.9    44.3     6.4       3.4      
-</pre>
+```
 
 ### Check for missing values
 
@@ -260,13 +260,13 @@ disp(array2table(sum(FL13.isMissing),'VariableNames',...
     FL13.T.Properties.VariableNames))
 ```
 
-<pre>
+```
 check which variable contains missing value...
     Date    Sink    Jolly    Overby    Undecided
     ____    ____    _____    ______    _________
 
     0       0       0        28        0     
-</pre>
+```
 
 ### Get the actual election result
 
@@ -285,13 +285,13 @@ disp('election result...')
 disp(FL13result)
 ```
 
-<pre>
+```
 election result...
        Date        Sink     Jolly     Overby    Undecided
     __________    ______    ______    ______    _________
 
     7.3567e+05    46.554    48.433    4.8342    0.1783   
-</pre>
+```
 
 ### Plot the Florida 13th data
 
