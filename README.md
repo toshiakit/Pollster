@@ -130,7 +130,7 @@ clearvars date approve disapprove undecided i j
 
 ### Remove missing values
 
-Real data is never perfect, so we need to Check for missing values and remove affected rows.
+Real data is never perfect, so we need to check for missing values and remove affected rows.
 
 ```{matlab}
 % get the indices of zero values
@@ -227,7 +227,8 @@ clearvars h
 
 As you can see, this is an iterative process, so it is good idea to automate some of the steps. Let’s use object oriented programming techniques to facilitate the data pull using a custom class called *myPollster* that I wrote. This way, all the processed data is encapsulated in the object itself, and you don’t run into namespacing issues.
 
-```{matlab}% instantiate the object
+```{matlab}
+% instantiate the object
 FL13 = myPollster();
 % specify the slug for the data pull
 slug = '2014-florida-house-13th-district-special-election';
@@ -252,12 +253,11 @@ clearvars slug
 
 ### Check for missing values
 
-*myPollster* class also provides a utility method to return the logical indices of missing values in the table.
+There is a utility methond in *myPollster* class to return the logical indices of missing values in the table.
 
 ```{matlab}
 disp('check which variable contains missing value...')
-disp(array2table(sum(FL13.isMissing),'VariableNames',...
-    FL13.T.Properties.VariableNames))
+disp(array2table(sum(FL13.isMissing),'VariableNames',FL13.T.Properties.VariableNames))
 ```
 
 ```
