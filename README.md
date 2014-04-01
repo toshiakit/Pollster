@@ -44,7 +44,9 @@ Nothing jumps out to me as a possible clue. Perhaps we need to look at local hea
 
 ### Pollster API
 
-Now I would like to address the programming aspect of this post. [Pollster API](http://elections.huffingtonpost.com/pollster/api) provides convenient access to the data from election polls. There are other websites that aggregate election polls, but this API was the easiest to use. Let’s start out with a ‘__hello, world__’ example of getting data for Obama Job Approval Ratings.
+Now I would like to address the programming aspect of this post. 
+
+[Pollster API](http://elections.huffingtonpost.com/pollster/api) provides convenient access to the data from election polls. There are other websites that aggregate election polls, but this API was the easiest to use. Let’s start out with a ‘__hello, world__’ example of getting data for Obama Job Approval Ratings.
 
 ```{matlab}
 clearvars;close all;clc;
@@ -85,7 +87,7 @@ clearvars fullUrl
 
 ### Convert the data into a table
 
-JSON stores data in nested tree structure like XML, so we need to convert it into a table in order to use the data in MATLAB.T This is a new feature introduced in R2013b, and I like it quite a lot.
+JSON stores data in nested tree structure like XML, so we need to convert it into a table in order to use the data in MATLAB. This is a new feature introduced in R2013b, and I like it quite a lot.
 
 ```{matlab}
 % initialize variables
@@ -335,6 +337,12 @@ Another benefit of object oriented programming is that the data is encapsulated 
 
 
 ```{matlab}
+% use myPollster class to call the API
+obamaFL = myPollster();
+slug = 'florida-obama-job-approval';
+obamaFL.getChartData(slug);
+
+% plot with local data
 figure
 subplot(2,1,1)
 plot(FL13.T.Date,FL13.T.Sink,'b-','LineWidth',2)

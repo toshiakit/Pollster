@@ -1,0 +1,627 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Election Poll Analysis in MATLAB</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-04-01"><meta name="DC.source" content="election_poll_analysis.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Election Poll Analysis in MATLAB</h1><!--introduction--><p>Availability of abundant data, coupled with the very impressive success of a complete outsider, Nate Silver, to make perfect calls in the last two presidential elections, turned election poll analysis one of fertile playgrounds for hobbyists to apply their data analytics skills for fun.</p><p>This analysis looks at the example of recent outcome of the special congressional election in Florida to find out: <b>does national politics affect local elections?</b> It also provides a ' <b>hello world</b> ' example of getting election poll data from Pollster website in JSON format, and automating the data pull process using object oriented programming.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Does national politics affect local elections?</a></li><li><a href="#2">Could this have been caused by national politics?</a></li><li><a href="#3">All politics is local</a></li><li><a href="#4">Has Obama sunk Sink?</a></li><li><a href="#5">Pollster API</a></li><li><a href="#6">Read JSON data using JSONlab</a></li><li><a href="#7">Convert the data into a table</a></li><li><a href="#8">Remove missing values</a></li><li><a href="#9">Get a summmary statistics of the variables</a></li><li><a href="#10">Plotting Obama Job Approval</a></li><li><a href="#11">Automate with Object Oriented Programming</a></li><li><a href="#12">Check for missing values</a></li><li><a href="#13">Get the actual election result</a></li><li><a href="#14">Plot the Florida 13th data</a></li><li><a href="#15">Mixing datasets in the plot</a></li><li><a href="#16">Have I whetted your appetite?</a></li></ul></div><h2>Does national politics affect local elections?<a name="1"></a></h2><p>There was a race in Florida recently that was supposedly &lt;http://www.huffingtonpost.com/2014/03/11/florida-special-election_n_4937699.html a test case for how Obama's healthcare law impacts the mid-term election. Or was it? Here is the election polls data from that race.</p><p><img vspace="5" hspace="5" src="pollster_02.png" alt=""> </p><p>What you can see in this plot is that the number of undecided voters suddenly dropped, and both Sink (D) and Jolly (R) benefited from it. But a larger percentage of those voters ended up voting for Jolly, rather than Sink. This rapid shift happened around Feb 5 - 12. What I expected was a smoother decline of undecided over time, perhaps more accelerated toward the election day.</p><h2>Could this have been caused by national politics?<a name="2"></a></h2><p>If you believe the pundits, then national issues like the healthcare law affected this local election. Let's use Obama's job approval rating as a proxy to check it out.</p><p><img vspace="5" hspace="5" src="pollster_03.png" alt=""> </p><p>As you can see in the plot, Obama's national poll was actually going up towards the end of this election.</p><h2>All politics is local<a name="3"></a></h2><p>It is more important to see the local trend rather than the national trend. So use the polls from Florida alone to see the local Obama Job Approval trend.</p><p><img vspace="5" hspace="5" src="pollster_04.png" alt=""> </p><h2>Has Obama sunk Sink?<a name="4"></a></h2><p>Obama's Job Approval was in recovery at the national level, but his approval was actually going down in Florida during this election. But can we really say this was attributable to Obamacare?</p><p>Let me know if you have good data source to test this claim. I am wondering what was happening around the time the undecided suddenly became decided in the beginning of February. In my opinion, Obamacare doesn't fully explain this rapid shift.</p><p>National news headlines around that time:</p><div><ul><li>Philip Seymour Hoffman died</li><li>Sochi Olympics coverage</li><li>Farm bill passing Senate</li><li>House approved debt limit ceiling hike</li><li>Story about less employment under Obamacare</li></ul></div><p>Nothing jumps out to me as a possible clue. Perhaps we need to look at local headlines instead. If so, then it would weaken the claim that this election was a test for a national issue.</p><h2>Pollster API<a name="5"></a></h2><p>Now I would like to address the programming aspect of this post.</p><p><a href="http://elections.huffingtonpost.com/pollster/api">Pollster API</a> provides convenient access to the data from election polls. There are other websites that aggregate election polls, but this API was the easiest to use. Let's start out with a ' <b>hello, world</b> ' example of getting data for Obama Job Approval Ratings.</p><pre class="codeinput">clearvars;close <span class="string">all</span>;clc;
+
+baseUrl=<span class="string">'http://elections.huffingtonpost.com/pollster/api/charts'</span>;
+slug = <span class="string">'obama-job-approval'</span>;
+respFormat = <span class="string">'json'</span>;
+fullUrl = sprintf(<span class="string">'%s/%s.%s'</span>,baseUrl,slug,respFormat);
+
+clearvars <span class="string">baseUrl</span> <span class="string">respFormat</span> <span class="string">slug</span>
+</pre><h2>Read JSON data using JSONlab<a name="6"></a></h2><pre>We need a way to read JSON formatted response into MATLAB. Install
+&lt;http://www.mathworks.com/matlabcentral/fileexchange/33381-jsonlab-a-toolbox-to-encodedecode-json-files-in-matlaboctave
+JSONlab&gt; from FileExchange before running script, and change the addpath
+to your installed location of JSONlab.</pre><pre class="codeinput">addpath <span class="string">../jsonlab_1.0alpha/jsonlab</span>;
+
+data=loadjson(urlread(fullUrl));
+disp(data)
+
+clearvars <span class="string">fullUrl</span>
+</pre><pre class="codeoutput">                title: 'Obama Job Approval'
+                 slug: 'obama-job-approval'
+                topic: 'obama-job-approval'
+                state: 'US'
+          short_title: 'Obama Job Approval'
+           poll_count: 2513
+         last_updated: '2014-03-31T14:43:41Z'
+                  url: 'http://elections.huffingtonpost.com/pollster/obama...'
+            estimates: {[1x1 struct]  [1x1 struct]  [1x1 struct]}
+    estimates_by_date: {1x1035 cell}
+
+</pre><h2>Convert the data into a table<a name="7"></a></h2><p>JSON stores data in nested tree structure like XML, so we need to convert it into a table in order to use the data in MATLAB. This is a new feature introduced in R2013b, and I like it quite a lot.</p><pre class="codeinput"><span class="comment">% initialize variables</span>
+estimates=data.estimates_by_date;
+date = zeros(length(estimates),1);
+approve = zeros(length(estimates),1);
+disapprove = zeros(length(estimates),1);
+undecided = zeros(length(estimates),1);
+
+<span class="comment">% loop over JSON tree</span>
+<span class="keyword">for</span> i = 1:length(estimates)
+    date(i) = datenum(estimates{i}.date);
+    <span class="keyword">for</span> j = 1:length(estimates{i}.estimates)
+        <span class="keyword">if</span> strcmpi(<span class="string">'approve'</span>,estimates{i}.estimates{j}.choice)
+            approve(i) = estimates{i}.estimates{j}.value;
+        <span class="keyword">elseif</span> strcmpi(<span class="string">'disapprove'</span>,estimates{i}.estimates{j}.choice)
+            disapprove(i) = estimates{i}.estimates{j}.value;
+        <span class="keyword">else</span>
+            undecided(i) = estimates{i}.estimates{j}.value;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% consolidate the data into a table</span>
+estimates = table(date,approve,disapprove,undecided);
+
+disp(estimates(1:5,:))
+
+clearvars <span class="string">date</span> <span class="string">approve</span> <span class="string">disapprove</span> <span class="string">undecided</span> <span class="string">i</span> <span class="string">j</span>
+</pre><pre class="codeoutput">       date       approve    disapprove    undecided
+    __________    _______    __________    _________
+
+    7.3569e+05    43.6       52              0      
+    7.3568e+05    43.6       52            4.4      
+    7.3568e+05    43.5       52            4.4      
+    7.3568e+05    43.5       52            4.4      
+    7.3568e+05    43.5       52              0      
+
+</pre><h2>Remove missing values<a name="8"></a></h2><p>Real data is never perfect, so we need to check for missing values and remove affected rows.</p><pre class="codeinput"><span class="comment">% get the indices of zero values</span>
+isMissing=table2array(estimates) == 0;
+<span class="comment">% get the count of missing values by variable</span>
+disp(<span class="string">'number of missing values by variable'</span>)
+disp(array2table(sum(isMissing),<span class="string">'VariableNames'</span>,<span class="keyword">...</span>
+    estimates.Properties.VariableNames));
+disp(<span class="string">'rows to drop for approve/disapprove'</span>)
+disp(estimates(isMissing(:,2),:))
+
+obamaDecided = estimates(~isMissing(:,2),1:3);
+obamaUndecided = estimates(~isMissing(:,4),[1 4]);
+
+clearvars <span class="string">isMissing</span>
+</pre><pre class="codeoutput">number of missing values by variable
+    date    approve    disapprove    undecided
+    ____    _______    __________    _________
+
+    0       2          2             199      
+
+rows to drop for approve/disapprove
+       date       approve    disapprove    undecided
+    __________    _______    __________    _________
+
+    7.3515e+05    0          0               4      
+    7.3382e+05    0          0             9.6      
+
+</pre><h2>Get a summmary statistics of the variables<a name="9"></a></h2><p>This gives you the min, max and median for numerical variables.</p><pre class="codeinput">summary(obamaDecided)
+</pre><pre class="codeoutput">
+Variables:
+
+    date: 1033x1 double
+        Values:
+
+            min       7.3374e+05
+            median    7.3468e+05
+            max       7.3569e+05
+
+    approve: 1033x1 double
+        Values:
+
+            min       42.5     
+            median    46.9     
+            max       71.6     
+
+    disapprove: 1033x1 double
+        Values:
+
+            min       12.5        
+            median    47.9        
+            max       52.5        
+
+</pre><h2>Plotting Obama Job Approval<a name="10"></a></h2><p>In the final step, let's validate the data processing so far by plotting the data and compare it the chart on Pollster website.</p><p>
+<script type="text/javascript"
+src="http://elections.huffingtonpost.com/pollster/obama-job-approval/embed.js#!maxdate=2014-03-29&estimate=official"
+data-width="580" data-height="400"></script>
+</p><pre class="codeinput">figure
+plot(obamaDecided.date,obamaDecided.approve,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,2)
+hold <span class="string">on</span>
+plot(obamaDecided.date,obamaDecided.disapprove,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,2)
+h = plot(obamaUndecided.date,obamaUndecided.undecided,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,2);
+set(h, <span class="string">'color'</span>, [0.7 0.7 0.7])
+datetick
+xlabel(<span class="string">'Date'</span>)
+ylabel(<span class="string">'Estimate'</span>)
+legend(<span class="string">'Approve'</span>,<span class="string">'Dispprove'</span>,<span class="string">'Undecided'</span>,<span class="string">'Location'</span>,<span class="string">'East'</span>)
+title(data.title)
+xlim([datenum(<span class="string">'2009-01-01'</span>) Inf])
+hold <span class="string">off</span>
+
+clearvars <span class="string">h</span>
+</pre><img vspace="5" hspace="5" src="election_poll_analysis_01.png" alt=""> <h2>Automate with Object Oriented Programming<a name="11"></a></h2><p>As you can see, this is an iterative process, so it is good idea to automate some of the steps. Let's use object oriented programming techniques to facilitate the data pull using a custom class called <i>myPollster</i> that I wrote. This way, all the processed data is encapsulated in the object itself, and you don't run into namespacing issues.</p><pre class="codeinput"><span class="comment">% instantiate the object</span>
+FL13 = myPollster();
+<span class="comment">% specify the slug for the data pull</span>
+slug = <span class="string">'2014-florida-house-13th-district-special-election'</span>;
+<span class="comment">% call the API and store the result in the object.</span>
+FL13.getChartData(slug);
+<span class="comment">% check the result</span>
+disp(FL13.T(1:5,:))
+
+clearvars <span class="string">slug</span>
+</pre><pre class="codeoutput">       Date       Sink    Jolly    Overby    Undecided
+    __________    ____    _____    ______    _________
+
+    7.3567e+05      46    44.3     6.4       3.3      
+    7.3567e+05      46    44.3     6.4       3.3      
+    7.3567e+05      46    44.3     6.4       3.4      
+    7.3567e+05    45.9    44.3     6.4       3.4      
+    7.3566e+05    45.9    44.3     6.4       3.4      
+
+</pre><h2>Check for missing values<a name="12"></a></h2><p>There is a utility methond in <i>myPollster</i> class to return the logical indices of missing values in the table.</p><pre class="codeinput">disp(<span class="string">'check which variable contains missing value...'</span>)
+disp(array2table(sum(FL13.isMissing),<span class="string">'VariableNames'</span>,FL13.T.Properties.VariableNames))
+</pre><pre class="codeoutput">check which variable contains missing value...
+    Date    Sink    Jolly    Overby    Undecided
+    ____    ____    _____    ______    _________
+
+    0       0       0        28        0        
+
+</pre><h2>Get the actual election result<a name="13"></a></h2><p>You can get the actual election result from <a href="http://en.wikipedia.org/wiki/Florida%27s_13th_congressional_district_special_election,_2014">Wikipedia</a>.</p><pre class="codeinput">FL13result = array2table(zeros(1,width(FL13.T)),<span class="keyword">...</span>
+    <span class="string">'VariableNames'</span>,FL13.T.Properties.VariableNames);
+FL13result.Date = datenum(<span class="string">'2014-03-11'</span>);
+FL13result.Sink = 85642/183962*100;
+FL13result.Jolly = 89099/183962*100;
+FL13result.Overby = 8893/183962*100;
+FL13result.Undecided = 328/183962*100;
+
+disp(<span class="string">'election result...'</span>)
+disp(FL13result)
+</pre><pre class="codeoutput">election result...
+       Date        Sink     Jolly     Overby    Undecided
+    __________    ______    ______    ______    _________
+
+    7.3567e+05    46.554    48.433    4.8342    0.1783   
+
+</pre><h2>Plot the Florida 13th data<a name="14"></a></h2><p>Here is the code for plotting the Florida 13th data - this is where we do a lot of iterations, so it is not automated intentionally for flexibility.</p><pre class="codeinput">figure
+plot(FL13.T.Date,FL13.T.Sink,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,2)
+hold <span class="string">on</span>
+plot(FL13.T.Date,FL13.T.Jolly,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,2)
+plot(FL13.T.Date(~FL13.isMissing(:,4)),<span class="keyword">...</span>
+    FL13.T.Overby(~FL13.isMissing(:,4)),<span class="string">'g-'</span>,<span class="string">'LineWidth'</span>,2)
+h = plot(FL13.T.Date,FL13.T.Undecided,<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,2);
+set(h, <span class="string">'color'</span>, [0.7 0.7 0.7])
+plot(FL13result.Date,FL13result.Sink,<span class="string">'bo'</span>)
+plot(FL13result.Date,FL13result.Jolly,<span class="string">'ro'</span>)
+plot(FL13result.Date,FL13result.Overby,<span class="string">'go'</span>)
+h = plot(FL13result.Date,FL13result.Undecided,<span class="string">'bo'</span>);
+set(h, <span class="string">'color'</span>, [0.7 0.7 0.7])
+datetick
+xlabel(<span class="string">'Date'</span>)
+ylabel(<span class="string">'Estimate'</span>)
+legend(<span class="string">'Sink'</span>,<span class="string">'Jolly'</span>,<span class="string">'Overby'</span>,<span class="string">'Undecided'</span>,<span class="string">'Location'</span>,<span class="string">'East'</span>)
+title(FL13.title)
+xlim([datenum(<span class="string">'2013-11-01'</span>) datenum(<span class="string">'2014-03-15'</span>)])
+
+<span class="comment">% adding annotations</span>
+text(datenum(<span class="string">'2014-01-25'</span>),50,<span class="string">'Actual results shown as circles'</span>)
+line([datenum(<span class="string">'2014-02-05'</span>) datenum(<span class="string">'2014-02-05'</span>)],[0 12],<span class="string">'Color'</span>,<span class="string">'m'</span>)
+line([datenum(<span class="string">'2014-02-12'</span>) datenum(<span class="string">'2014-02-12'</span>)],[0 12],<span class="string">'Color'</span>,<span class="string">'m'</span>)
+text(datenum(<span class="string">'2014-02-11'</span>),13,<span class="string">'12-Feb-2014'</span>)
+text(datenum(<span class="string">'2014-01-18'</span>),13,<span class="string">'05-Feb-2014'</span>)
+hold <span class="string">off</span>
+
+clearvars <span class="string">h</span>
+</pre><img vspace="5" hspace="5" src="election_poll_analysis_02.png" alt=""> <h2>Mixing datasets in the plot<a name="15"></a></h2><p>Another benefit of object oriented programming is that the data is encapsulated in the object itself, so we can use it for namespacing similar variables. Here, we are comparing Obama's Job Approval at national as well as local levels. But thanks to the dot notation to reference encapsulated data, you are less likely to mix up similarly named variables.</p><pre class="codeinput"><span class="comment">% use myPollster class to call the API</span>
+obamaFL = myPollster();
+slug = <span class="string">'florida-obama-job-approval'</span>;
+obamaFL.getChartData(slug);
+
+<span class="comment">% plot with local data</span>
+figure
+subplot(2,1,1)
+plot(FL13.T.Date,FL13.T.Sink,<span class="string">'b-'</span>,<span class="string">'LineWidth'</span>,2)
+hold <span class="string">on</span>
+plot(FL13.T.Date,FL13.T.Jolly,<span class="string">'r-'</span>,<span class="string">'LineWidth'</span>,2)
+plot(FL13result.Date,FL13result.Sink,<span class="string">'bo'</span>)
+plot(FL13result.Date,FL13result.Jolly,<span class="string">'ro'</span>)
+datetick
+xlabel(<span class="string">'Date'</span>)
+ylabel(<span class="string">'Estimate'</span>)
+legend(<span class="string">'Sink'</span>,<span class="string">'Jolly'</span>,<span class="string">'Location'</span>,<span class="string">'SouthEast'</span>)
+xlim([datenum(<span class="string">'2013-11-01'</span>) datenum(<span class="string">'2014-03-15'</span>)])
+title(FL13.title)
+hold <span class="string">off</span>
+subplot(2,1,2)
+plot(obamaDecided.date,obamaDecided.approve,<span class="string">'m-'</span>,<span class="string">'LineWidth'</span>,2)
+hold <span class="string">on</span>
+plot(obamaFL.T.Date(~obamaFL.isMissing(:,2),:),<span class="keyword">...</span>
+    obamaFL.T.Approve(~obamaFL.isMissing(:,2),:),<span class="string">'k-'</span>,<span class="string">'LineWidth'</span>,2)
+datetick
+xlabel(<span class="string">'Date'</span>)
+ylabel(<span class="string">'Estimate'</span>)
+legend(<span class="string">'National'</span>,<span class="string">'Florida'</span>,<span class="string">'Location'</span>,<span class="string">'Southwest'</span>)
+xlim([datenum(<span class="string">'2013-11-01'</span>) datenum(<span class="string">'2014-03-15'</span>)])
+ylim([40 44])
+title(data.title)
+hold <span class="string">off</span>
+
+clearvars <span class="string">h</span> <span class="string">slug</span>
+</pre><img vspace="5" hspace="5" src="election_poll_analysis_03.png" alt=""> <h2>Have I whetted your appetite?<a name="16"></a></h2><p>Hopefully this simple example was sufficient to get you interested in trying it yourself. In this example, I simply took the smoothed trend lines provided by Pollster, but you could also get individual poll data and build more complex model to make some prediction yourself.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Election Poll Analysis in MATLAB
+% Availability of abundant data, coupled with the very impressive success 
+% of a complete outsider, Nate Silver, to make perfect calls in the last 
+% two presidential elections, turned election poll analysis one of fertile 
+% playgrounds for hobbyists to apply their data analytics skills for fun.
+%
+% This analysis looks at the example of recent outcome of the special 
+% congressional election in Florida to find out: *does national politics 
+% affect local elections?* It also provides a ' *hello world* ' example of 
+% getting election poll data from Pollster website in JSON format, and 
+% automating the data pull process using object oriented programming.
+%
+%%% Does national politics affect local elections?
+% There was a race in Florida recently that was supposedly
+% <http://www.huffingtonpost.com/2014/03/11/florida-special-election_n_4937699.html 
+% a test case for how Obama's healthcare law impacts the mid-term 
+% election. Or was it? Here is the election polls data from that race. 
+% 
+% <<pollster_02.png>>
+% 
+% What you can see in this plot is that the number of undecided voters 
+% suddenly dropped, and both Sink (D) and Jolly (R) benefited from it. 
+% But a larger percentage of those voters ended up voting for Jolly, 
+% rather than Sink. This rapid shift happened around Feb 5 - 12. What I 
+% expected was a smoother decline of undecided over time, perhaps more 
+% accelerated toward the election day.
+%
+%%% Could this have been caused by national politics?
+% If you believe the pundits, then national issues like the healthcare law 
+% affected this local election. Let's use Obama's job approval rating as a 
+% proxy to check it out.
+%
+% <<pollster_03.png>>
+%
+% As you can see in the plot, Obama's national poll was actually going up 
+% towards the end of this election.
+%
+%%% All politics is local
+%
+% It is more important to see the local trend rather than the national 
+% trend. So use the polls from Florida alone to see the local Obama Job 
+% Approval trend.
+%
+% <<pollster_04.png>>
+%
+%%% Has Obama sunk Sink?
+%
+% Obama's Job Approval was in recovery at the national level, but his 
+% approval was actually going down in Florida during this election. But 
+% can we really say this was attributable to Obamacare?
+% 
+% Let me know if you have good data source to test this claim. I am 
+% wondering what was happening around the time the undecided suddenly 
+% became decided in the beginning of February. In my opinion, Obamacare 
+% doesn't fully explain this rapid shift.
+% 
+% National news headlines around that time:
+% 
+% * Philip Seymour Hoffman died
+% * Sochi Olympics coverage
+% * Farm bill passing Senate
+% * House approved debt limit ceiling hike
+% * Story about less employment under Obamacare
+% 
+% Nothing jumps out to me as a possible clue. Perhaps we need to look at 
+% local headlines instead. If so, then it would weaken the claim that 
+% this election was a test for a national issue.
+%
+%%% Pollster API
+% Now I would like to address the programming aspect of this post. 
+%
+% <http://elections.huffingtonpost.com/pollster/api Pollster API> provides 
+% convenient access to the data from election polls. There are other 
+% websites that aggregate election polls, but this API was the easiest 
+% to use. Let's start out with a ' *hello, world* ' example of getting 
+% data for Obama Job Approval Ratings.
+
+clearvars;close all;clc;
+
+baseUrl='http://elections.huffingtonpost.com/pollster/api/charts';
+slug = 'obama-job-approval';
+respFormat = 'json';
+fullUrl = sprintf('%s/%s.%s',baseUrl,slug,respFormat);
+
+clearvars baseUrl respFormat slug
+
+%% Read JSON data using JSONlab
+%  We need a way to read JSON formatted response into MATLAB. Install 
+% <http://www.mathworks.com/matlabcentral/fileexchange/33381-jsonlab-a-toolbox-to-encodedecode-json-files-in-matlaboctave 
+% JSONlab> from FileExchange before running script, and change the addpath 
+% to your installed location of JSONlab.
+
+addpath ../jsonlab_1.0alpha/jsonlab;
+
+data=loadjson(urlread(fullUrl));
+disp(data)
+
+clearvars fullUrl
+
+%% Convert the data into a table
+% JSON stores data in nested tree structure like XML, so we need to 
+% convert it into a table in order to use the data in MATLAB. This is a 
+% new feature introduced in R2013b, and I like it quite a lot.
+
+% initialize variables
+estimates=data.estimates_by_date;
+date = zeros(length(estimates),1);
+approve = zeros(length(estimates),1);
+disapprove = zeros(length(estimates),1);
+undecided = zeros(length(estimates),1);
+
+% loop over JSON tree
+for i = 1:length(estimates)
+    date(i) = datenum(estimates{i}.date);
+    for j = 1:length(estimates{i}.estimates)
+        if strcmpi('approve',estimates{i}.estimates{j}.choice)
+            approve(i) = estimates{i}.estimates{j}.value;
+        elseif strcmpi('disapprove',estimates{i}.estimates{j}.choice)
+            disapprove(i) = estimates{i}.estimates{j}.value;
+        else
+            undecided(i) = estimates{i}.estimates{j}.value;
+        end
+    end
+end
+
+% consolidate the data into a table
+estimates = table(date,approve,disapprove,undecided);
+
+disp(estimates(1:5,:))
+
+clearvars date approve disapprove undecided i j
+
+%% Remove missing values
+% Real data is never perfect, so we need to check for missing values and 
+% remove affected rows.
+
+% get the indices of zero values
+isMissing=table2array(estimates) == 0;
+% get the count of missing values by variable
+disp('number of missing values by variable')
+disp(array2table(sum(isMissing),'VariableNames',...
+    estimates.Properties.VariableNames));
+disp('rows to drop for approve/disapprove')
+disp(estimates(isMissing(:,2),:))
+
+obamaDecided = estimates(~isMissing(:,2),1:3);
+obamaUndecided = estimates(~isMissing(:,4),[1 4]);
+
+clearvars isMissing
+
+%% Get a summmary statistics of the variables
+% This gives you the min, max and median for numerical variables.
+
+summary(obamaDecided)
+
+%% Plotting Obama Job Approval
+% In the final step, let's validate the data processing so far by 
+% plotting the data and compare it the chart on Pollster website.
+%
+% <html>
+% <script type="text/javascript" 
+% src="http://elections.huffingtonpost.com/pollster/obama-job-approval/embed.js#!maxdate=2014-03-29&estimate=official" 
+% data-width="580" data-height="400"></script>
+% </html>
+
+figure
+plot(obamaDecided.date,obamaDecided.approve,'k-','LineWidth',2)
+hold on
+plot(obamaDecided.date,obamaDecided.disapprove,'r-','LineWidth',2)
+h = plot(obamaUndecided.date,obamaUndecided.undecided,'b-','LineWidth',2);
+set(h, 'color', [0.7 0.7 0.7])
+datetick
+xlabel('Date')
+ylabel('Estimate')
+legend('Approve','Dispprove','Undecided','Location','East')
+title(data.title)
+xlim([datenum('2009-01-01') Inf])
+hold off
+
+clearvars h
+
+%% Automate with Object Oriented Programming
+% As you can see, this is an iterative process, so it is good idea to 
+% automate some of the steps. Let's use object oriented programming 
+% techniques to facilitate the data pull using a custom class called 
+% _myPollster_ that I wrote. This way, all the processed data is 
+% encapsulated in the object itself, and you don't run into namespacing 
+% issues.
+
+% instantiate the object
+FL13 = myPollster();
+% specify the slug for the data pull
+slug = '2014-florida-house-13th-district-special-election';
+% call the API and store the result in the object.
+FL13.getChartData(slug);
+% check the result
+disp(FL13.T(1:5,:))
+
+clearvars slug
+
+%% Check for missing values
+% There is a utility methond in _myPollster_ class to return the logical 
+% indices of missing values in the table.
+
+disp('check which variable contains missing value...')
+disp(array2table(sum(FL13.isMissing),'VariableNames',FL13.T.Properties.VariableNames))
+
+%% Get the actual election result
+% You can get the actual election result from 
+% <http://en.wikipedia.org/wiki/Florida%27s_13th_congressional_district_special_election,_2014
+% Wikipedia>.
+
+FL13result = array2table(zeros(1,width(FL13.T)),...
+    'VariableNames',FL13.T.Properties.VariableNames);
+FL13result.Date = datenum('2014-03-11');
+FL13result.Sink = 85642/183962*100;
+FL13result.Jolly = 89099/183962*100;
+FL13result.Overby = 8893/183962*100;
+FL13result.Undecided = 328/183962*100;
+
+disp('election result...')
+disp(FL13result)
+
+%% Plot the Florida 13th data
+% Here is the code for plotting the Florida 13th data - this is where we 
+% do a lot of iterations, so it is not automated intentionally for 
+% flexibility.
+
+figure
+plot(FL13.T.Date,FL13.T.Sink,'b-','LineWidth',2)
+hold on
+plot(FL13.T.Date,FL13.T.Jolly,'r-','LineWidth',2)
+plot(FL13.T.Date(~FL13.isMissing(:,4)),...
+    FL13.T.Overby(~FL13.isMissing(:,4)),'g-','LineWidth',2)
+h = plot(FL13.T.Date,FL13.T.Undecided,'k-','LineWidth',2);
+set(h, 'color', [0.7 0.7 0.7])
+plot(FL13result.Date,FL13result.Sink,'bo')
+plot(FL13result.Date,FL13result.Jolly,'ro')
+plot(FL13result.Date,FL13result.Overby,'go')
+h = plot(FL13result.Date,FL13result.Undecided,'bo');
+set(h, 'color', [0.7 0.7 0.7])
+datetick
+xlabel('Date')
+ylabel('Estimate')
+legend('Sink','Jolly','Overby','Undecided','Location','East')
+title(FL13.title)
+xlim([datenum('2013-11-01') datenum('2014-03-15')])
+
+% adding annotations
+text(datenum('2014-01-25'),50,'Actual results shown as circles')
+line([datenum('2014-02-05') datenum('2014-02-05')],[0 12],'Color','m')
+line([datenum('2014-02-12') datenum('2014-02-12')],[0 12],'Color','m')
+text(datenum('2014-02-11'),13,'12-Feb-2014')
+text(datenum('2014-01-18'),13,'05-Feb-2014')
+hold off
+
+clearvars h
+
+%% Mixing datasets in the plot
+% Another benefit of object oriented programming is that the data is 
+% encapsulated in the object itself, so we can use it for namespacing 
+% similar variables. Here, we are comparing Obama's Job Approval at 
+% national as well as local levels. But thanks to the dot notation to 
+% reference encapsulated data, you are less likely to mix up similarly 
+% named variables.
+
+% use myPollster class to call the API
+obamaFL = myPollster();
+slug = 'florida-obama-job-approval';
+obamaFL.getChartData(slug);
+
+% plot with local data
+figure
+subplot(2,1,1)
+plot(FL13.T.Date,FL13.T.Sink,'b-','LineWidth',2)
+hold on
+plot(FL13.T.Date,FL13.T.Jolly,'r-','LineWidth',2)
+plot(FL13result.Date,FL13result.Sink,'bo')
+plot(FL13result.Date,FL13result.Jolly,'ro')
+datetick
+xlabel('Date')
+ylabel('Estimate')
+legend('Sink','Jolly','Location','SouthEast')
+xlim([datenum('2013-11-01') datenum('2014-03-15')])
+title(FL13.title)
+hold off
+subplot(2,1,2)
+plot(obamaDecided.date,obamaDecided.approve,'m-','LineWidth',2)
+hold on
+plot(obamaFL.T.Date(~obamaFL.isMissing(:,2),:),...
+    obamaFL.T.Approve(~obamaFL.isMissing(:,2),:),'k-','LineWidth',2)
+datetick
+xlabel('Date')
+ylabel('Estimate')
+legend('National','Florida','Location','Southwest')
+xlim([datenum('2013-11-01') datenum('2014-03-15')])
+ylim([40 44])
+title(data.title)
+hold off
+
+clearvars h slug
+
+%% Have I whetted your appetite?
+% Hopefully this simple example was sufficient to get you interested in 
+% trying it yourself. In this example, I simply took the smoothed trend 
+% lines provided by Pollster, but you could also get individual poll data 
+% and build more complex model to make some prediction yourself. 
+
+
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>
